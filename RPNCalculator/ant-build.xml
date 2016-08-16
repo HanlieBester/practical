@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<project name="RPNCalculator" basedir="." >
+
+	<!-- Ant Property Declarations -->
+	<loadproperties srcFile="../RPNCalculator-deploy/ant/ant-property.properties">
+		<filterchain>
+			<linecontains>
+				<contains value="ant.common." />
+			</linecontains>
+		</filterchain>
+	</loadproperties>
+				
+	<!-- Classpath Definitions  -->
+	<path id="webinf.classpath">
+		<fileset dir="WebContent/WEB-INF/lib" includes="*.jar" />
+	</path>
+
+	<target name="local-pluto-deploy" description="Install application to local pluto server instance">
+		<antcall target="webapp-compile"></antcall>
+		<antcall target="webapp-src-copy"></antcall>
+		<antcall target="webapp-war-create"></antcall>
+		<antcall target="webapp-src-copy-delete"></antcall>
+		<copy file="${ant.common.deploy.dir}/${ant.common.warfile.name}" todir="${ant.common.pluto.deploy.path}" />
+	</target>	
+
+	<target name="webapp-compile">
+		<delete dir="${basedir}/WebContent/WEB-INF/classes" />
+		<mkdir dir="${basedir}/WebContent/WEB-INF/classes" />			
+		<taskdef name="hibernatedoclet" classname="org.xdoclet.ant.XDocletTask"	classpathref="webinf.classpath" />
+			<!-- defines the file handled by xdoclet2 -->
+			<hibernatedoclet>
+				<fileset dir="${ant.common.src.dir}">
+					<include name="**/domain/**/*.java" />
+				</fileset>
+			    <!-- defines the processing of a plugin -->
+			    <component
+			    	classname="org.xdoclet.plugin.hibernate.HibernateMappingPlugin"
+			        destdir="${ant.common.src.dir}"
+			        version="3.0"
+			        validate="true" />
+	        </hibernatedoclet>
+		<echo message="Regenerated Hibernate mapping files in ${ant.common.src.dir}" level="info" />	
+		
+		<javac srcdir="${basedir}/JavaSource" destdir="${basedir}/WebContent/WEB-INF/classes" debug="true" deprecation="false" optimize="false" failonerror="true">
+			<classpath refid="webinf.classpath" />
+		</javac>		
+		
+		<copy todir="${basedir}/WebContent/WEB-INF/classes">
+			<fileset dir="${basedir}/JavaSource" includes="**/calculator/**/**/*.hbm.xml">
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="webapp-war-create">
+		<delete file="${ant.common.deploy.dir}/${ant.common.warfile.name}" />
+		<tstamp>
+	          <format property="TODAY_SA" pattern="yyyy-MM-dd HH:mm:ss" locale="en,ZAR"/>
+        </tstamp>
+		<tstamp>
+	          <format property="CREATE_DATE_TIME" pattern="yyyy-MM-dd_HH-mm-ss" locale="en,ZAR"/>
+        </tstamp>
+
+		<jar jarfile="${ant.common.deploy.dir}/${ant.common.warfile.name}" >
+			<fileset dir="${basedir}/WebContent" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Build-Date-Time" value="${TODAY_SA}" />
+				<attribute name="Weblogic-Application-Version" value="ver_${CREATE_DATE_TIME}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="webapp-src-copy">
+		<copy todir="${basedir}/WebContent/WEB-INF/classes">
+			<fileset dir="${basedir}/JavaSource" includes="**/calculator/*.java, **/calculator/*.xml">
+			</fileset>
+		</copy>		
+	</target>
+
+	<target name="webapp-src-copy-delete">
+		<delete>
+			<fileset dir="${basedir}/WebContent/WEB-INF/classes" includes="**/calculator/*.java, **/calculator/*.xml">
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="runtime-force-clean" description="deletes the deployed appication for the runtimes respectively">
+			<echo message="ACHTUNG! server instances MUST be stopped first for this target to be effective!" description="Attempts to delete the deployed application in the server runtime." level="error" />
+			<delete file="${ant.common.pluto.deploy.path}/${ant.common.warfile.name}" />
+			<delete dir="${ant.common.pluto.deploy.path}/${ant.common.applic.name}" />
+			<delete dir="${ant.common.pluto.work.path}/${ant.common.applic.name}" />			
+		</target>
+</project>

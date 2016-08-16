@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-lazy-init="false" default-autowire="no" default-dependency-check="none">
+    
+    <!-- Templates -->
+    <bean id="daoTemplate" abstract="true">
+        <property name="sessionFactory">
+            <ref bean="mySessionFactory"/>
+        </property>
+    </bean>
+          
+    <!-- dao's -->
+    <bean id="rpnDao" class="calculator.dao.RPNDaoHibernate" parent="daoTemplate"/>
+     
+	<!-- Hibernate mappings -->    	
+	<bean id="mySessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="mappingResources">
+            <list>	           	
+	           	<value>calculator/domain/Result.hbm.xml</value>	           		           		          	           
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.use_sql_comments">true</prop>
+             </props>  
+        </property>                
+        <property name="dataSource">
+            <ref bean="dataSource"/>
+        </property>
+    </bean>        
+    
+    <bean id="myTransactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref bean="mySessionFactory"/>
+        </property>
+    </bean>
+
+    <bean id="myTransactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager">
+            <ref bean="myTransactionManager"/>
+        </property>
+    </bean>          
+</beans>

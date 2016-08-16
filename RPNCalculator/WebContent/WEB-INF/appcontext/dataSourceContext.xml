@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-lazy-init="false" default-autowire="no" default-dependency-check="none">
+
+ <bean id="dataSource"
+        class="com.mchange.v2.c3p0.ComboPooledDataSource"
+        singleton="true"
+        lazy-init="false">
+        <property name="driverClass">
+            <value>oracle.jdbc.OracleDriver</value>
+        </property>
+        <property name="jdbcUrl">        	
+          <value>jdbc:oracle:thin:@aaeehthispg5a6.cu6idgeg9atw.us-west-2.rds.amazonaws.com:1521:EBDB</value>
+        </property>
+        <property name="user">
+            <value>practical</value>
+        </property>
+        <property name="password">
+	      	<value>practical</value>          
+        </property>
+		<property name="initialPoolSize" value="3"/>
+		<property name="minPoolSize" value="3"/>
+		<property name="maxPoolSize" value="20"/>
+		<property name="maxIdleTime" value="300"/> <!-- seconds -->
+		<property name="acquireIncrement" value="3"/> <!-- when pool is exhausted -->
+		<property name="idleConnectionTestPeriod" value="300"/> <!-- seconds -->
+		<property name="maxStatements" value="1000"/> <!-- size of PreparedStatement cache, 0 is no cache -->
+    </bean>
+</beans>
