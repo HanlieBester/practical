@@ -7,6 +7,8 @@ package calculator.domain;
 public class Result {
 	
 	Long id;
+	String resultCode;
+	String resultMsg;
 	String request;	
 	String answer;
 	
@@ -47,4 +49,28 @@ public class Result {
 		this.request = request;
 	}
 	
+	/**
+     * @return the result code indication success/failure
+     * @hibernate.property column="result_code"
+     */
+	public String getResultCode() {
+		return resultCode;
+	}
+
+	public void setResultCode(String resultCode) {
+		this.resultCode = resultCode;
+	}
+
+	/**
+     * @return the result msg indicating success/failure message
+     * @hibernate.property column="result_msg"
+     */
+	public String getResultMsg() {
+		return resultMsg;
+	}
+
+	public void setResultMsg(String resultMsg) {
+		this.resultMsg = resultMsg;
+	}
+
 }

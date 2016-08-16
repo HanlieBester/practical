@@ -8,5 +8,7 @@
     </id>
     <property name="answer" column="response"/>
     <property name="request" column="request"/>
+    <property name="resultCode" column="result_code"/>
+    <property name="resultMsg" column="result_msg"/>
   </class>
 </hibernate-mapping>
